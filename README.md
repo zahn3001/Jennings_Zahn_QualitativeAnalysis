@@ -77,6 +77,9 @@ python qualitative-analysis/Step2_InitialCoding.py \
   --input data/inputs/GroupOneTranscript_Inductive.xlsx \
   --output-dir outputs/inductive
 
+data/inputs/              # user drops transcript here
+outputs/inductive/        # Step1/2/3 artifacts live here
+
 Expected output: text file with initial codes extracted from the transcript.
 
 
