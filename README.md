@@ -15,6 +15,7 @@ qualitative-analysis/
 │  ├─ Step1_Familiarization_JZQA.py
 │  ├─ Step2_Coding_JZQA.py      
 │  ├─ Step3_FinalCodebook_JZQA.py
+│  ├─ Deductive_JZQA.py
 ├─ data/
 │  ├─ inputs/
 │  └─ samples/
