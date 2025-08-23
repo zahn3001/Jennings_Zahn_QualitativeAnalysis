@@ -34,18 +34,14 @@ qualitative-analysis/
 - [OpenAI Python SDK](https://github.com/openai/openai-python)
 - pandas
 
-Install dependencies:
+**Install dependencies:**
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # macOS / Linux
 pip install -r requirements.txt
 
-Example requirements.txt:
-openai>=1.0.0
-pandas
-
-Setup
+**Setup**
 
 Export your OpenAI API key as an environment variable:
 export OPENAI_API_KEY="sk-..."
@@ -53,11 +49,11 @@ export OPENAI_API_KEY="sk-..."
 (Optional) Set a default model for all scripts:
 export OPENAI_MODEL="gpt-4o"
 
-Usage
+**Usage**
 
 Each script accepts command-line arguments for flexible input/output handling.
 
-Step 1: Familiarization (Inductive)
+**Step 1: Familiarization (Inductive)**
 
 python qualitative-analysis/Step1_Familiarization_JZQA.py \
   --input data/inputs/GroupOneTranscript_Inductive.xlsx \
@@ -71,7 +67,7 @@ Optional flags:
 	•	--max-chars : truncate input text to this length (default: 15000)
 
 
-Step 2: Initial Coding (Inductive)
+**Step 2: Initial Coding (Inductive)**
 
 python qualitative-analysis/Step2_Coding_JZQA.py \
   --input data/inputs/GroupOneTranscript_Inductive.xlsx \
@@ -82,9 +78,9 @@ data/inputs/              # user drops transcript here
 outputs/inductive/        # Step1/2/3 artifacts live here
 
 Expected output: text file with initial codes extracted from the transcript.
+Writes: Step2_Coded_Responses.csv, Step2_Prompt.txt, Step2_RunMetadata.json, Step2_JSON_Failures.log
 
-
-Step 3: Codebook Development (Inductive)
+**Step 3: Codebook Development (Inductive)**
 
 python qualitative-analysis/Step3_CodebookDevelopment.py \
   --input outputs/inductive/Step2_InitialCoding.txt \
