@@ -18,6 +18,7 @@ export OPENAI_API_KEY="sk-..."
 export OPENAI_MODEL="gpt-4o"
 
 **4. Run an Example**
+
 Run Step 1 with a sample transcript:
 python qualitative-analysis/Step1_Familiarization_JZQA.py \
   --input data/samples/sample_transcript.xlsx \
@@ -28,6 +29,15 @@ python qualitative-analysis/Step2_Coding_JZQA.py \
   --input data/samples/sample_transcript.xlsx \
   --output-dir outputs/inductive \
   --step1-path outputs/inductive/Step1_Familiarization.txt
+
+Run Step 3:
+Run grouping, refinement, and quote selection:
+```bash
+python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
+  --run-initial-grouping --run-refinement --run-quote-selection \
+  --step2-path outputs/inductive/Step2_Coded_Responses.csv \
+  --step1-path outputs/inductive/Step1_Familiarization.txt \
+  --output-dir outputs/inductive
 
 **5. Workflow Overview**
 	1.	Step 1 – Familiarization
