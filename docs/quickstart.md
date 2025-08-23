@@ -23,6 +23,12 @@ python qualitative-analysis/Step1_Familiarization_JZQA.py \
   --input data/samples/sample_transcript.xlsx \
   --output-dir outputs/inductive
 
+Run Step 2:
+python qualitative-analysis/Step2_Coding_JZQA.py \
+  --input data/samples/sample_transcript.xlsx \
+  --output-dir outputs/inductive \
+  --step1-path outputs/inductive/Step1_Familiarization.txt
+
 **5. Workflow Overview**
 	1.	Step 1 – Familiarization
 	2.	Step 2 – Initial Coding
