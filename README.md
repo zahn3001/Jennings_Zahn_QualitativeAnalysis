@@ -73,9 +73,10 @@ Optional flags:
 
 Step 2: Initial Coding (Inductive)
 
-python qualitative-analysis/Step2_InitialCoding.py \
+python qualitative-analysis/Step2_Coding_JZQA.py \
   --input data/inputs/GroupOneTranscript_Inductive.xlsx \
-  --output-dir outputs/inductive
+  --output-dir outputs/inductive \
+  --step1-path outputs/inductive/Step1_Familiarization.txt
 
 data/inputs/              # user drops transcript here
 outputs/inductive/        # Step1/2/3 artifacts live here
