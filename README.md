@@ -32,12 +32,15 @@ qualitative-analysis/
 - Python 3.10+
 - [OpenAI Python SDK](https://github.com/openai/openai-python)
 - pandas
+- openpyxl (Excel reading)
+- xlsxwriter (Excel writing)
 
 **Install dependencies:**
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # macOS / Linux
+.venv\Scripts\activate      # Windows (PowerShell)
 pip install -r requirements.txt
 
 **Setup**
@@ -73,16 +76,27 @@ python qualitative-analysis/Step2_Coding_JZQA.py \
   --output-dir outputs/inductive \
   --step1-path outputs/inductive/Step1_Familiarization.txt
 
+Optional flags:
+Additional per-attempt controls:
+- `--temp-fallback` (default: base − 0.2)
+- `--temp-strict` (default: 0.5)
+- `--temp-ultra` (default: 0.1)
+- `--tokens-strict` (default: min(500, --max-tokens))
+- `--tokens-ultra` (default: min(300, --max-tokens))
+
 data/inputs/              # user drops transcript here
 outputs/inductive/        # Step1/2/3 artifacts live here
 
-Expected output: text file with initial codes extracted from the transcript.
-Writes: Step2_Coded_Responses.csv, Step2_Prompt.txt, Step2_RunMetadata.json, Step2_JSON_Failures.log
+Expected outputs:
+- `Step2_Coded_Responses.csv` — structured table with codes, definitions, and reasoning
+- `Step2_Prompt.txt` — prompt artifact (unless `--no-save-prompt`)
+- `Step2_RunMetadata.json` — reproducibility metadata
+- `Step2_JSON_Failures.log` — fallback log for JSON parsing issues
 
 **Step 3: Codebook Development (Inductive)**
 
-**Initial grouping only**
-```bash
+Initial grouping only:
+
 python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
   --run-initial-grouping \
   --step2-path outputs/inductive/Step2_Coded_Responses.csv \
@@ -90,17 +104,20 @@ python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
   --output-dir outputs/inductive \
   --model gpt-4o
 
-Refinement only (assigns any remaining “Initial Codes” into Final Codes or creates a new Final Code when needed)
+Refinement only (assigns any remaining “Initial Codes” into Final Codes or creates a new Final Code when needed):
+
 python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
   --run-refinement \
   --output-dir outputs/inductive
 
-Quote selection only (adds representative “Example” quotes for each Final Code)
+Quote selection only (adds representative “Example” quotes for each Final Code):
+
 python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
   --run-quote-selection \
   --output-dir outputs/inductive
 
-End‑to‑end
+End‑to‑end:
+
 python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
   --run-initial-grouping --run-refinement --run-quote-selection \
   --step2-path outputs/inductive/Step2_Coded_Responses.csv \
@@ -134,12 +151,40 @@ Expected output: structured codebook with definitions and examples.
 
 **Deductive Coding**
 
-python qualitative-analysis/Deductive_Coding.py \
+Default run on an Excel transcript:
+
+python qualitative-analysis/Deductive_JZQA.py \
   --input data/inputs/GroupOneTranscript_Deductive.xlsx \
   --output-dir outputs/deductive \
-  --codebook outputs/inductive/Final_Codebook.txt
+  --model gpt-4o
 
-Expected output: dataset annotated with deductive codes from the provided codebook.
+Use only specific codes:
+
+python qualitative-analysis/Deductive_JZQA.py \
+  --input data/inputs/GroupOneTranscript_Deductive.xlsx \
+  --code-mode custom --custom-codes Efficiency "Trust in 2-Sigma"
+
+First 10 codes, smaller context, faster speed:
+
+python qualitative-analysis/Deductive_JZQA.py \
+  --code-mode first_n --n 10 \
+  --context-window 0 \
+  --rate-limit-sleep 0.5
+
+CSV input works too:
+
+python qualitative-analysis/Deductive_JZQA.py \
+  --input data/inputs/transcript.csv \
+  --output-dir outputs/deductive
+
+Expected outputs (in `outputs/deductive/`):
+- `AI_Coded_Transcript_with_Reasoning.csv` — row-by-row streaming output
+- `AI_Coded_Transcript_with_Reasoning_backup.csv` — rolling backup
+- `AI_Coded_Transcript_with_Reasoning_full.csv` — full final snapshot
+- `Deductive_Prompt_Template.txt` — saved system + user prompt template
+- `Deductive_RunMetadata.json` — reproducibility metadata
+- `Deductive_CodebookSnapshot.json` — snapshot of code names/definitions/examples
+- `Deductive_InputSnapshot.csv` — snapshot of parsed transcript input
 
 Inputs & Outputs
 	•	Inputs: Excel or CSV transcripts placed in data/inputs/
@@ -152,6 +197,7 @@ Example Workflow
 	3.	Step 3 – Consolidate into a codebook
 	4.	Deductive Coding – Apply codebook to new transcripts
 
-Sample Data
+## Sample Data
 
-Anonymized sample transcripts are provided in data/samples/ for testing.
+Anonymized sample transcripts are provided in `data/samples/` for testing.
+You can run all steps end-to-end using these to verify installation and workflow.
