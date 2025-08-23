@@ -12,18 +12,17 @@ qualitative-analysis/
 ├─ README.md
 ├─ requirements.txt
 ├─ qualitative-analysis/
-│  ├─ Step1_Familiarization_JZQA.py   # Inductive coding - Step 1
-│  ├─ Step2_InitialCoding.py          # Inductive coding - Step 2
-│  ├─ Step3_CodebookDevelopment.py    # Inductive coding - Step 3
-│  ├─ Deductive_Coding.py             # Deductive coding analysis
+│  ├─ Step1_Familiarization_JZQA.py
+│  ├─ Step2_Coding_JZQA.py      
+│  ├─ Step3_FinalCodebook_JZQA.py
 ├─ data/
-│  ├─ inputs/                         # Place your input files here
-│  └─ samples/                        # Small example transcripts for testing
+│  ├─ inputs/
+│  └─ samples/
 ├─ outputs/
-│  ├─ inductive/                      # Saved results for inductive steps
-│  └─ deductive/                      # Saved results for deductive coding
+│  ├─ inductive/
+│  └─ deductive/
 ├─ configs/
-│  └─ example.env                     # Shows how to set environment variables
+│  └─ example.env
 └─ docs/
    ├─ quickstart.md
    └─ methods.md
@@ -82,13 +81,58 @@ Writes: Step2_Coded_Responses.csv, Step2_Prompt.txt, Step2_RunMetadata.json, Ste
 
 **Step 3: Codebook Development (Inductive)**
 
-python qualitative-analysis/Step3_CodebookDevelopment.py \
-  --input outputs/inductive/Step2_InitialCoding.txt \
+**Initial grouping only**
+```bash
+python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
+  --run-initial-grouping \
+  --step2-path outputs/inductive/Step2_Coded_Responses.csv \
+  --step1-path outputs/inductive/Step1_Familiarization.txt \
+  --output-dir outputs/inductive \
+  --model gpt-4o
+
+Refinement only (assigns any remaining “Initial Codes” into Final Codes or creates a new Final Code when needed)
+python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
+  --run-refinement \
   --output-dir outputs/inductive
+
+Quote selection only (adds representative “Example” quotes for each Final Code)
+python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
+  --run-quote-selection \
+  --output-dir outputs/inductive
+
+End‑to‑end
+python qualitative-analysis/Step3_FinalCodebook_JZQA.py \
+  --run-initial-grouping --run-refinement --run-quote-selection \
+  --step2-path outputs/inductive/Step2_Coded_Responses.csv \
+  --step1-path outputs/inductive/Step1_Familiarization.txt \
+  --output-dir outputs/inductive
+
+Common options
+	•	--model (default from OPENAI_MODEL or gpt-4o)
+	•	--temperature / --max-tokens (grouping)
+	•	--refine-temperature / --refine-max-tokens
+	•	--quote-temperature / --quote-max-tokens
+	•	--min-support (default: 2) — filter low‑frequency initial codes in grouping
+	•	--top-examples-per-code (default: 3)
+	•	--max-rows (limit rows from Step 2 for quick tests)
+	•	--max-chars (truncate grouping prompt body)
+	•	--no-save-prompt (skip saving prompt text artifacts)
+
+Step 3 outputs (in outputs/inductive/)
+	•	Step3_Codebook.json — machine‑readable final codebook
+	•	Step3_Codebook.txt — human‑readable codebook
+	•	final_codebook.xlsx — workbook with sheets:
+	•	Final Codebook (includes “Example” & “Example Source Row” after quote selection)
+	•	Sampled Codes, Missing Initial Codes (refinement log), Initial Codes
+	•	Prompt & run artifacts:
+	•	Step3_Prompt_Grouping.txt, Step3_Prompt_Refinement.txt, Step3_Prompt_Quote.txt (unless --no-save-prompt)
+	•	Step3_RunMetadata.json, Step3_InputSnapshot.csv
+	•	Transcript_Text_Only.csv, initial_code_reference.csv, initial_code_reference_sampled.csv, sampled_initial_code_numbers.txt
+	•	Grouped_Codes_Raw.txt, refinement_log.csv, Refinement_History/…
 
 Expected output: structured codebook with definitions and examples.
 
-Deductive Coding
+**Deductive Coding**
 
 python qualitative-analysis/Deductive_Coding.py \
   --input data/inputs/GroupOneTranscript_Deductive.xlsx \
